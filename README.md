@@ -128,16 +128,41 @@ Evaluasi model dilakukan untuk mengukur performa masing-masing model dalam mengk
 ---
 
 ## 🖼️ Hasil Prediksi Model
-Pengujian dilakukan melalui dashboard Streamlit menggunakan citra pose yoga dari dataset.
+Pengujian dilakukan melalui dashboard Streamlit menggunakan citra pose yoga untuk melihat kemampuan model dalam melakukan prediksi kelas pose yoga.
 
-- **CNN**  
-  Akurasi prediksi: **71,99%** dan **83,28%**
+### 🔹 CNN (Non-Pretrained)
 
-- **MobileNetV2**  
-  Akurasi prediksi: **82,71%** dan **99,60%**
+<p align="center">
+  <img src="assets/cnn-hasil%20prediksi.jpg" width="600"/>
+  <br>
+  <em>Gambar 7. Contoh hasil prediksi pose yoga menggunakan model CNN</em>
+</p>
 
-- **ResNet101**  
-  Akurasi prediksi: **92,52%** dan **71,94%**
+Model menghasilkan tingkat kepercayaan prediksi sebesar **71,99%** dan **83,28%**.
+
+---
+
+### 🔹 MobileNetV2 (Pretrained)
+
+<p align="center">
+  <img src="assets/mobilenet-hasil%20prediksi.jpg" width="600"/>
+  <br>
+  <em>Gambar 8. Contoh hasil prediksi pose yoga menggunakan model MobileNetV2</em>
+</p>
+
+Model memberikan hasil prediksi paling konsisten dengan tingkat kepercayaan **82,71%** dan **99,60%**.
+
+---
+
+### 🔹 ResNet101 (Pretrained)
+
+<p align="center">
+  <img src="assets/resnet-hasil%20prediksi.jpg" width="600"/>
+  <br>
+  <em>Gambar 9. Contoh hasil prediksi pose yoga menggunakan model ResNet101</em>
+</p>
+
+Model menghasilkan tingkat kepercayaan prediksi sebesar **92,52%** dan **71,94%**.
 
 ---
 
