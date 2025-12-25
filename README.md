@@ -165,7 +165,7 @@ Pada bagian ini akan menampilkan hasil yang diperoleh dari setiap model terkait 
 Setelah proses pelatihan dan evaluasi selesai, masing-masing model diuji menggunakan citra pose yoga yang diambil dari folder dataset. Pengujian ini bertujuan untuk melihat kemampuan model dalam memprediksi kelas pose yoga. Hasil prediksi ditampilkan melalui dashboard berbasis Streamlit untuk melihat apakah model dapat menebak pose yoga dengan benar. 
 Berikut ini ditampilkan contoh hasil prediksi dari ketiga model yang digunakan:
 
-### 🔹 CNN (Non-Pretrained)
+### 1. CNN (Non-Pretrained)
 
 <p align="center">
   <img src="assets/cnn-hasil.jpeg" width="600"/>
@@ -177,7 +177,7 @@ Model berhasil memprediksi pose dengan benar menggunakan model CNN, dengan akura
 
 ---
 
-### 🔹 MobileNetV2 (Pretrained)
+### 2. MobileNetV2 (Pretrained)
 
 <p align="center">
   <img src="assets/mobilenet-hasil.jpeg" width="600"/>
@@ -189,7 +189,7 @@ Model berhasil memprediksi pose dengan benar menggunakan model MobileNetV2, deng
 
 ---
 
-### 🔹 ResNet101 (Pretrained)
+### 3. ResNet101 (Pretrained)
 
 <p align="center">
   <img src="assets/resnet-hasil.jpeg" width="600"/>
