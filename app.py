@@ -1,145 +1,232 @@
-def run():
-    import streamlit as st
-    import tensorflow as tf
-    import os
-    import numpy as np
-    from PIL import Image
-    import pandas as pd
+import streamlit as st
+import cnn_app
+import mobile_app
+import resnet_app
+import os
+import base64
 
-    # ================================
-    # HEADER
-    # ================================
-    st.header("🧘 Klasifikasi Citra Pose Yoga")
+# ============================= 
+# PAGE CONFIG
+# =============================
+st.set_page_config(
+    page_title="Dashboard Tugas Praktikum ML",
+    layout="wide"
+)
 
-    # ================================
-    # BASE DIR & MODEL PATH
-    # ================================
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# =============================
+# LOAD BACKGROUND IMAGE
+# =============================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BG_PATH = os.path.join(BASE_DIR, "background3.jpg")
 
-    MODEL_PATHS = {
-        "CNN": os.path.join(BASE_DIR, "models", "yoga_cnn_model.h5"),
-        "MobileNetV2": os.path.join(BASE_DIR, "models", "model_mobilenetv2_yoga.h5"),
-        "ResNet101": os.path.join(BASE_DIR, "models", "resnet101_model.keras"),
-    }
+def get_base64_image(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
 
-    CLASS_NAMES = [
-        'adho mukha svanasana', 'adho mukha vriksasana', 'agnistambhasana',
-        'ananda balasana', 'anantasana', 'anjaneyasana', 'ardha bhekasana',
-        'ardha chandrasana', 'ardha matsyendrasana', 'ardha pincha mayurasana',
-        'ardha uttanasana', 'ashtanga namaskara', 'astavakrasana',
-        'baddha konasana', 'bakasana', 'balasana', 'bhairavasana',
-        'bharadvajasana i', 'bhekasana', 'bhujangasana', 'bhujapidasana',
-        'bitilasana', 'camatkarasana', 'chakravakasana',
-        'chaturanga dandasana', 'dandasana', 'dhanurasana', 'durvasasana',
-        'dwi pada viparita dandasana', 'eka pada koundinyanasana i',
-        'eka pada koundinyanasana ii', 'eka pada rajakapotasana',
-        'eka pada rajakapotasana ii', 'ganda bherundasana',
-        'garbha pindasana', 'garudasana', 'gomukhasana', 'halasana',
-        'hanumanasana', 'janu sirsasana', 'kapotasana', 'krounchasana',
-        'kurmasana', 'lolasana', 'makara adho mukha svanasana',
-        'makarasana', 'malasana', 'marichyasana i', 'marichyasana iii',
-        'marjaryasana', 'matsyasana', 'mayurasana', 'natarajasana',
-        'padangusthasana', 'padmasana', 'parighasana',
-        'paripurna navasana', 'parivrtta janu sirsasana',
-        'parivrtta parsvakonasana', 'parivrtta trikonasana',
-        'parsva bakasana', 'parsvottanasana', 'pasasana',
-        'paschimottanasana', 'phalakasana', 'pincha mayurasana',
-        'prasarita padottanasana', 'purvottanasana', 'salabhasana',
-        'salamba bhujangasana', 'salamba sarvangasana',
-        'salamba sirsasana', 'savasana', 'setu bandha sarvangasana',
-        'simhasana', 'sukhasana', 'supta baddha konasana',
-        'supta matsyendrasana', 'supta padangusthasana',
-        'supta virasana', 'tadasana', 'tittibhasana', 'tolasana',
-        'tulasana', 'upavistha konasana', 'urdhva dhanurasana',
-        'urdhva hastasana', 'urdhva mukha svanasana',
-        'urdhva prasarita eka padasana', 'ustrasana', 'utkatasana',
-        'uttana shishosana', 'uttanasana',
-        'utthita ashwa sanchalanasana',
-        'utthita hasta padangustasana',
-        'utthita parsvakonasana', 'utthita trikonasana',
-        'vajrasana', 'vasisthasana', 'viparita karani',
-        'virabhadrasana i', 'virabhadrasana ii',
-        'virabhadrasana iii', 'virasana', 'vriksasana',
-        'vrischikasana', 'yoganidrasana'
-    ]
+bg_image = get_base64_image(BG_PATH)
 
-    # ================================
-    # SIDEBAR
-    # ================================
-    st.sidebar.title("⚙️ Pengaturan")
-    selected_model = st.sidebar.selectbox("Pilih Model", list(MODEL_PATHS.keys()))
+# =============================
+# GLOBAL CSS
+# =============================
+st.markdown(
+    f"""
+    <style>
 
-    @st.cache_resource
-    def load_model(model_path):
-        tf.keras.backend.clear_session()
-        return tf.keras.models.load_model(model_path)
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@400;500;600&display=swap');
 
-    model = load_model(MODEL_PATHS[selected_model])
+    /* ===== BACKGROUND ===== */
+    .stApp {{
+        background:
+            linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+            url("data:image/png;base64,{bg_image}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
 
-    # ================================
-    # FILE UPLOADER
-    # ================================
-    uploaded_files = st.file_uploader(
-        "Upload maksimal 3 gambar pose yoga (jpg/png)",
-        type=["jpg", "jpeg", "png"],
-        accept_multiple_files=True
+    /* ===== SAMAKAN JUDUL SUB PAGE ===== */
+    div[data-testid="stTitle"] h1,
+    div[data-testid="stHeader"] h2,
+    h1, h2 {{
+        font-family: 'Playfair Display', serif !important;
+        font-size: 28px !important;
+        font-weight: 800 !important;
+        color: #FFC0D9 !important;
+        letter-spacing: 1px;
+    }}
+
+    /* ===== HEADER HOME ===== */
+    .header {{
+        padding-top: 26px;
+        padding-bottom: 18px;
+        text-align: center;
+    }}
+
+    .header h1 {{
+        font-size: 58px !important;
+        margin: 0;
+    }}
+
+    .header p {{
+        margin-top: 4px;
+        font-size: 15.5px;
+        color: #FFD1DC;
+        font-family: 'Poppins', sans-serif;
+    }}
+
+    /* ===== HOME TITLE ===== */
+    .home-title {{
+        margin-top: 22px;
+        margin-bottom: 32px;
+        color: #FFD1DC;
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        font-weight: 600;
+    }}
+
+    /* ===== PARAGRAPH ===== */
+    p {{
+        color: #F8D7E3;
+        font-family: 'Poppins', sans-serif;
+    }}
+
+    /* ===== BOX ===== */
+    .pink-box {{
+        padding: 32px;
+        border-radius: 22px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        transition: 0.35s ease;
+    }}
+
+    .pink-box:hover {{
+        transform: translateY(-8px);
+        box-shadow: 0 18px 45px rgba(155, 58, 90, 0.9);
+    }}
+
+    /* ===== BUTTON ===== */
+    .stButton > button {{
+        background-color: #DB7093;
+        color: white;
+        border-radius: 10px;
+        padding: 6px 20px;
+        border: none;
+        font-weight: 600;
+        font-size: 14px;
+        margin-top: 12px;
+        transition: 0.3s;
+        font-family: 'Poppins', sans-serif;
+    }}
+
+    .stButton > button:hover {{
+        background-color: #9B3A5A;
+        transform: scale(1.04);
+    }}
+
+    footer {{
+        visibility: hidden;
+    }}
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# =============================
+# SESSION STATE
+# =============================
+if "page" not in st.session_state:
+    st.session_state.page = "home"
+
+# =============================
+# HEADER
+# =============================
+st.markdown(
+    """
+    <div class="header">
+        <h1>KLASIFIKASI MODEL CITRA</h1>
+        <p>Dashboard Praktikum Machine Learning</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# =============================
+# HOME PAGE
+# =============================
+if st.session_state.page == "home":
+
+    st.markdown(
+        "<h3 class='home-title'>Implementasi Model Citra</h3>",
+        unsafe_allow_html=True
     )
 
-    if uploaded_files:
-        if len(uploaded_files) > 3:
-            st.warning("Hanya 3 gambar pertama yang diproses.")
-            uploaded_files = uploaded_files[:3]
+    col1, col2, col3 = st.columns(3)
 
-        st.subheader("Preview Gambar")
-        cols = st.columns(len(uploaded_files))
-        for i, file in enumerate(uploaded_files):
-            with cols[i]:
-                img = Image.open(file)
-                st.image(img, use_column_width=True)
+    with col1:
+        st.markdown("""
+            <div class="pink-box">
+                <h4>Model Non-Pretrained (CNN)</h4>
+                <p>Analisis gambar menggunakan CNN</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Klik", key="cnn"): 
+            st.session_state.page = "cnn" 
+            st.rerun()
 
-        results = []
+    with col2:
+        st.markdown("""
+            <div class="pink-box">
+                <h4>Model Pretrained 1 - MobileNetV2</h4>
+                <p>Analisis gambar menggunakan MobileNetV2</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Klik", key="mobile"): 
+            st.session_state.page = "mobile" 
+            st.rerun()
 
-        for file in uploaded_files:
-            try:
-                img = Image.open(file).convert("RGB").resize((224, 224))
-                arr = np.array(img)
-                arr = np.expand_dims(arr, axis=0)
+    with col3:
+        st.markdown("""
+            <div class="pink-box">
+                <h4>Model Pretrained 2 - ResNet101</h4>
+                <p>Analisis gambar menggunakan ResNet101</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Klik", key="resnet"): 
+            st.session_state.page = "resnet" 
+            st.rerun()
 
-                if selected_model == "CNN":
-                    arr = arr / 255.0
-                elif selected_model == "MobileNetV2":
-                    arr = tf.keras.applications.mobilenet_v2.preprocess_input(arr)
-                else:
-                    arr = tf.keras.applications.resnet.preprocess_input(arr)
+# =============================
+# SUB PAGES
+# =============================
+elif st.session_state.page == "cnn": 
+    cnn_app.run()
+    if st.button("Kembali"):
+        st.session_state.page = "home"
+        st.rerun()
 
-                preds = model.predict(arr, verbose=0)[0]
-                idx = np.argmax(preds)
+elif st.session_state.page == "mobile": 
+    mobile_app.run()
+    if st.button("Kembali"):
+        st.session_state.page = "home"
+        st.rerun()
 
-                results.append({
-                    "Nama File": file.name,
-                    "Model": selected_model,
-                    "Prediksi": CLASS_NAMES[idx],
-                    "Confidence (%)": f"{preds[idx] * 100:.2f}"
-                })
+elif st.session_state.page == "resnet": 
+    resnet_app.run()
+    if st.button("Kembali"):
+        st.session_state.page = "home"
+        st.rerun()
 
-            except Exception as e:
-                st.error(f"Gagal memproses {file.name}: {e}")
-
-        if results:
-            st.subheader("📊 Hasil Prediksi")
-            df = pd.DataFrame(results)
-            st.dataframe(df, use_container_width=True)
-
-            st.subheader("📈 Grafik Confidence")
-            chart_df = df[["Prediksi", "Confidence (%)"]]
-            chart_df = chart_df.set_index("Prediksi")
-            st.bar_chart(chart_df)
-
-            st.success("✅ Prediksi selesai")
-
-    st.markdown("---")
-    st.markdown("**UAP Pembelajaran Mesin – Yoga Pose Classification**")
-
-# ⬇️ INI WAJIB ADA
-if __name__ == "__main__":
-    run()
+# =============================
+# FOOTER
+# =============================
+st.markdown(
+    """
+    <div style="text-align:center; font-size:14px; color:#FFD1DC; padding:46px 0 28px 0;">
+        🌸 Praktikum UAP Machine Learning 🌸<br>
+        <b>Larasati Khadijah Kalimantari Karnain</b> | <b>202210370311410</b>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
