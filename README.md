@@ -178,7 +178,33 @@ Hasil ini menunjukkan bahwa **model pretrained yang ringan lebih efektif** untuk
 
 ## 🌐 Panduan Menjalankan Website Secara Lokal
 
-1. Clone repository:
-   ```bash
-   git clone https://github.com/username/uap-yogas-pose.git
-   cd uap-yogas-pose
+Ikuti langkah-langkah berikut secara berurutan:
+
+# 1. Clone repository
+```bash
+git clone https://github.com/username/uap-yogas-pose.git
+cd uap-yogas-pose
+```
+
+# 2. Install PDM (Python Dependency Manager)
+```bash
+pip install pdm
+pdm --version
+```
+
+# 3. Inisialisasi environment dengan PDM
+```bash
+pdm install           # Install seluruh dependency proyek
+pdm venv activate     # Aktifkan environment
+```
+
+# 4. Menjalankan Notebook untuk Training Model
+```bash
+pdm run jupyter notebook
+# Buka file notebook: notebooks/UAP_Yoga_Pose_Image_Classification.ipynb
+# Jalankan seluruh cell (Run All)
+```
+Setelah notebook dijalankan, model hasil training otomatis tersimpan di folder models:
+- models/yoga_cnn_model.h5
+- models/model_mobilenetv2_yoga.h5
+- models/resnet101_model.keras
