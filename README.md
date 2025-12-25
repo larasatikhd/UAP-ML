@@ -147,6 +147,7 @@ Evaluasi model dilakukan untuk mengukur performa masing-masing model dalam mengk
   <br>
   <em>Gambar 6. Confusion matrix model ResNet101</em>
 </p>
+
 ---
 
 ## 🔍 Perbandingan Performa Model
